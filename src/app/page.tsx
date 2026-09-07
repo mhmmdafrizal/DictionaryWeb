@@ -15,8 +15,8 @@ import NotFound from '@/components/notFound';
 
 export default function Home() {
   const [ showDropdown, setShowDropdown ] = useState<boolean>( false );
-  const [ font, setFont ] = useState<string>( 'Sans Serif' );
-  const [ bodyFont, setBodyFont ] = useState<string>( 'font-inter' )
+  const [ font, setFont ] = useState<string>( 'Mono' );
+  const [ bodyFont, setBodyFont ] = useState<string>( 'font-inconsolata' )
   const [ inputValue, setInputValue ] = useState<Data[]>( [] )
   const [ searchState, setSearchState ] = useState<string>( '' )
   const [ err, setErr ] = useState<string>( '' )
@@ -27,26 +27,22 @@ export default function Home() {
   interface Data {
     word: string,
     phonetic?: string,
-    phonetics: [ {
+    phonetics: {
       text?: string,
       audio?: string
-    } ],
-    meanings: [
-      {
-        partOfSpeech: string,
-        definitions: [
-          {
-            definition: string,
-            synonyms?: string[],
-            antonyms?: string[],
-            example?: string
-          }
-        ],
+    }[],
+    meanings: {
+      partOfSpeech: string,
+      definitions: {
+        definition: string,
         synonyms?: string[],
-        antonyms?: string[]
-      }
-    ],
-    sourceUrls: string
+        antonyms?: string[],
+        example?: string
+      }[],
+      synonyms?: string[],
+      antonyms?: string[]
+    }[],
+    sourceUrls: string[]
   }
   // Zod Schema
   const DataSchema = z.array( z.object( {
@@ -102,19 +98,48 @@ export default function Home() {
 
     } else {
       setInputState( 'outline-none' )
-      const api = await fetch( `https://api.dictionaryapi.dev/api/v2/entries/en/${ evt }` );
+      let api: Response
+      try {
+        api = await fetch( `https://freedictionaryapi.com/api/v1/entries/en/${ evt }` );
+      } catch {
+        setErr( 'Failed to fetch. Check your connection and try again.' )
+        setInputValue( [] )
+        setNotFound( true )
+        return
+      }
 
       if ( searchState && api.status === 200 ) {
         setNotFound( false );
         const response = api
-        const data: Data[] = await response.json();
+        interface Sense { definition: string; examples?: string[]; synonyms?: string[]; antonyms?: string[] }
+        interface Entry { partOfSpeech: string; pronunciations?: { text?: string }[]; senses: Sense[]; synonyms?: string[]; antonyms?: string[] }
+        const data: { word: string; entries: Entry[]; source?: { url?: string } } = await response.json();
+
+        const transformed: Data[] = [ {
+          word: data.word,
+          phonetic: data.entries[ 0 ]?.pronunciations?.[ 0 ]?.text,
+          phonetics: [],
+          meanings: data.entries.map( ( entry ) => ( {
+            partOfSpeech: entry.partOfSpeech,
+            definitions: entry.senses.map( ( sense ) => ( {
+              definition: sense.definition,
+              synonyms: sense.synonyms?.length ? sense.synonyms : undefined,
+              antonyms: sense.antonyms?.length ? sense.antonyms : undefined,
+              example: sense.examples?.[ 0 ]
+            } ) ),
+            synonyms: entry.synonyms?.length ? entry.synonyms : undefined,
+            antonyms: entry.antonyms?.length ? entry.antonyms : undefined
+          } ) ),
+          sourceUrls: data.source?.url ? [ data.source.url ] : []
+        } ];
+
         // Zod validation
-        const validatedData = DataSchema.safeParse( data );
+        const validatedData = DataSchema.safeParse( transformed );
         if ( !validatedData.success ) {
           console.error( 'Error validating data:', validatedData.error.message );
           return
         }
-        setInputValue( data );
+        setInputValue( transformed );
         setErr( '' )
       } else {
         setErr( '' )
@@ -134,11 +159,11 @@ export default function Home() {
           {/* <!-- font selection --> */ }
 
           <div className="w-2/4 text-end relative ">
-            <button onClick={ dropdownHandler }
+            {/* <button onClick={ dropdownHandler }
               className="text-dark2 bg-transparent focus:outline-none focus:ring-0 font-bold rounded-lg text-sm sm:text-lg px-2 py-2 text-center inline-flex items-center dark:hover:bg-transparent dark:focus:ring-0 dark:text-cwhite"
               type="button">{ font }
               <DropdownArrow className=" w-2.5 h-2.5 ms-3 stroke-cpurple" />
-            </button>
+            </button> */}
 
             {/* <!-- Dropdown menu --> */ }
             {/* <div> </div> */ }
@@ -172,7 +197,7 @@ export default function Home() {
 
             <input type="text"
               className={ `w-full py-3.5 sm:py-5 pl-6 pr-12 bg-gray1 text-dark2 font-bold text-base sm:text-xl rounded-xl cursor-pointer ${ inputState } hover:ring-cpurple hover:ring-2  focus:ring-inset focus:ring-2 focus:ring-cpurple 
-            placeholder:text-dark2 placeholder:text-base sm:placeholder:text-xl dark:bg-dark3 dark:text-cwhite dark:placeholder:text-cwhite`} onChange={ e => setSearchState( e.target.value.trim() ) }
+            placeholder:text-dark2 placeholder:text-base sm:placeholder:text-xl dark:bg-dark3 dark:text-cwhite dark:placeholder:text-cwhite`} onChange={ e => setSearchState( e.target.value.trim() ) } onKeyDown={ ( e ) => { if ( e.key === 'Enter' ) fetchHandler( searchState ) } }
               placeholder="Search" />
             <Image src={ search } role='button' alt=""
               className="absolute shrink-0 top-4 sm:top-6 right-4 sm:right-5 sm:w-6 sm:h-6" id="searchBtn" onClick={ () => fetchHandler( searchState ) } />
@@ -205,14 +230,18 @@ export default function Home() {
                     </div>
 
                     <div className=" w-12 h-12 sm:w-[4.688rem] sm:h-[4.688rem]" id="audioPlayer">
-                      {/* Return the first output it finds */ }
-                      {
-                        output.phonetics.find( phonetic => phonetic.audio ) && (
-                          <Link href={ `${ output.phonetics.find( phonetic => phonetic.audio )?.audio }` } target="_blank" className=" inline-block">
-                            <Image src={ audioPlay } className="w-full h-full shrink-0" alt="audio play" />
-                          </Link>
-                        )
-                      }
+                      <button
+                        type="button"
+                        className="w-full h-full shrink-0"
+                        aria-label={ `Play pronunciation of ${ output.word }` }
+                        onClick={ () => {
+                          const utterance = new SpeechSynthesisUtterance( output.word );
+                          utterance.lang = 'en-US';
+                          speechSynthesis.cancel();
+                          speechSynthesis.speak( utterance );
+                        } }>
+                        <Image src={ audioPlay } className="w-full h-full shrink-0" alt="audio play" />
+                      </button>
                     </div>
                   </div>
                 ) }
