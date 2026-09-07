@@ -4,7 +4,7 @@
 
 A fast, responsive dictionary web app built with **Next.js**. Search any English word to get its phonetic pronunciation, definitions, synonyms, antonyms, examples, and source links — all in one clean interface.
 
-![Desktop Mode](./public/screenshot/Dictionary-App-Desktop.jpg)
+![Desktop Mode](./public/screenshot/Dictionary-App-Desktop.png)
 
 **Live Demo:** [https://dictionary-web-orpin.vercel.app](https://dictionary-web-orpin.vercel.app/)
 
