@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📖 DictionaryWebApp
+# 📖 Dictionary Web
 
 A fast, responsive dictionary web app built with **Next.js**. Search any English word to get its phonetic pronunciation, definitions, synonyms, antonyms, examples, and source links — all in one clean interface.
 
@@ -23,7 +23,8 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 
 ## Features
 
-- 🔍 **Word search** — look up any English word via the Free Dictionary API (press Enter or click the search icon)
+- 🔍 **Word search** — look up any English word via the Free Dictionary API (press Enter or click the search icon). Search terms are case-insensitive
+- 🔉 **Translate to Bahasa** — get an English → Indonesian translation of any looked-up word via the MyMemory API
 - 🔊 **Audio pronunciation** — hear the word spoken using the Web Speech API
 - 📚 **Rich results** — phonetics, definitions, synonyms, antonyms, examples, and source links
 - 🔤 **Font selector** — switch between Sans Serif, Serif, and Mono typefaces
@@ -41,6 +42,7 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 - [next-themes](https://github.com/pacocoursey/next-themes) — theme switching
 - [Zod](https://zod.dev/) — schema validation
 - [Free Dictionary API](https://dictionaryapi.dev/) / [FreeDictionaryAPI](https://freedictionaryapi.com/) — word data
+- [MyMemory Translation API](https://mymemory.translated.net/) — English → Bahasa translation
 - [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) — pronunciation audio
 
 ## Getting Started
@@ -81,6 +83,8 @@ npm run lint    # run ESLint
 ## API Note
 
 The app consumes the public **Free Dictionary API** — **no API key is required**. Responses are validated against a Zod schema before being rendered.
+
+The **Translate to Bahasa** feature uses the free [MyMemory Translation API](https://mymemory.translated.net/), which is key-less for low-volume use. Translations are fetched on-demand when you click the "Translate to Bahasa" button under a word.
 
 ## Project Structure
 

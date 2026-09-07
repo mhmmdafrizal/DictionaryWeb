@@ -22,6 +22,8 @@ export default function Home() {
   const [ err, setErr ] = useState<string>( '' )
   const [ inputState, setInputState ] = useState<string>( 'outline-none' )
   const [ notFound, setNotFound ] = useState<boolean>( false )
+  const [ bahasa, setBahasa ] = useState<string>( '' )
+  const [ bahasaLoading, setBahasaLoading ] = useState<boolean>( false )
 
   // Typescript Interface
   interface Data {
@@ -95,9 +97,14 @@ export default function Home() {
       setErr( "Whoops, can't be empty..." )
       setInputValue( [] )
       setNotFound( false );
+      setBahasa( '' )
+      setBahasaLoading( false )
 
     } else {
       setInputState( 'outline-none' )
+      evt = evt.toLowerCase().trim();
+      setBahasa( '' )
+      setBahasaLoading( false )
       let api: Response
       try {
         api = await fetch( `https://freedictionaryapi.com/api/v1/entries/en/${ evt }` );
@@ -147,6 +154,20 @@ export default function Home() {
         setNotFound( true );
 
       }
+    }
+  }
+
+  const translateHandler = async ( word: string ): Promise<void> => {
+    if ( !word ) return;
+    setBahasaLoading( true );
+    try {
+      const res = await fetch( `https://api.mymemory.translated.net/get?q=${ encodeURIComponent( word ) }&langpair=en|id` );
+      const data = await res.json();
+      setBahasa( data?.responseData?.translatedText ?? '' );
+    } catch {
+      setBahasa( '' );
+    } finally {
+      setBahasaLoading( false );
     }
   }
 
@@ -226,6 +247,23 @@ export default function Home() {
                       <h1 className="mb-2 text-[2rem] sm:text-[4rem] font-bold tracking-tight text-dark2 dark:text-cwhite">{ output.word }
                       </h1>
                       <p className="text-lg sm:text-2xl font-normal font-inter text-cpurple">{ output.phonetic }</p>
+                      <div>
+                        { bahasa && bahasa !== output.word && (
+                          <p className="mt-2 text-base sm:text-xl font-normal text-emerald-600 dark:text-emerald-400">
+                            Bahasa: { bahasa }
+                          </p>
+                        ) }
+                        { bahasaLoading ? (
+                          <p className="mt-2 text-sm text-gray3">Translating...</p>
+                        ) : ( !bahasa && (
+                          <button
+                            type="button"
+                            onClick={ () => translateHandler( output.word ) }
+                            className="mt-3 text-sm font-bold text-cpurple underline hover:opacity-80">
+                            Translate to Bahasa
+                          </button>
+                        ) ) }
+                      </div>
 
                     </div>
 
