@@ -5,9 +5,8 @@
 A fast, responsive dictionary web app built with **Next.js**. Search any English word to get its phonetic pronunciation, definitions, synonyms, antonyms, examples, and source links — all in one clean interface.
 
 ![Desktop Mode](./public/screenshot/Dictionary-App-Desktop.jpg)
-![Mobile Mode](./public/screenshot/Dictionary-App-10-22-2024_07_45_PM.jpg)
 
-**Live Demo:** [dictionary-web-app-with-next-js-jbfj.vercel.app](https://dictionary-web-app-with-next-js-jbfj.vercel.app/) · **Repo:** [dictionary-web-app-with-nextJs](https://github.com/itadori-kun/dictionary-web-app-with-nextJs)
+**Live Demo:** [https://dictionary-web-orpin.vercel.app](https://dictionary-web-orpin.vercel.app/)
 
 </div>
 
@@ -55,10 +54,10 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/itadori-kun/dictionary-web-app-with-nextJs.git
+git clone https://github.com/mhmmdafrizal/DictionaryWeb.git
 
 # 2. Navigate into the project
-cd dictionary-web-app-with-nextJs
+cd DictionaryWeb
 
 # 3. Install dependencies
 npm install
@@ -110,6 +109,5 @@ src/
 
 ## Author
 
-- **GitHub** — [@itadori-kun](https://github.com/itadori-kun)
-- **Frontend Mentor** — [@itadori-kun](https://www.frontendmentor.io/profile/itadori-kun)
-- **Twitter / X** — [@godwincruise](https://www.twitter.com/godwincruise)
+- **GitHub** — [@mhmmdafrizal](https://github.com/mhmmdafrizal)
+- **Linkedin** — [@mhmmdafrizal](https://www.linkedin.com/in/mhmmdafrizal/)
