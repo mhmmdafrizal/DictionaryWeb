@@ -22,13 +22,14 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 
 ## Features
 
-- 🔍 **Word search** — look up any English word via the Free Dictionary API (press Enter or click the search icon). Search terms are case-insensitive
+- 🔍 **Word search** — look up any English word via the FreeDictionaryAPI (press Enter or click the search icon). Search terms are case-insensitive
 - 🔉 **Translate to Bahasa** — get an English → Indonesian translation of any looked-up word via the MyMemory API
 - 🔊 **Audio pronunciation** — hear the word spoken using the Web Speech API
 - 📚 **Rich results** — phonetics, definitions, synonyms, antonyms, examples, and source links
 - 🔤 **Font selector** — switch between Sans Serif, Serif, and Mono typefaces
 - 🌙 **Dark / light mode** — instant theme toggle powered by `next-themes`
 - 🧪 **Robust validation** — API responses validated with Zod
+- 🔒 **E2E security tests** — Playwright suite covering load, search, XSS, and console errors
 - 📱 **Mobile-first, responsive design** — works seamlessly from phone to desktop
 - 🛑 **Graceful states** — clear empty-state and "no definitions found" UI
 
@@ -40,7 +41,7 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 - [Tailwind CSS](https://tailwindcss.com/) — styling
 - [next-themes](https://github.com/pacocoursey/next-themes) — theme switching
 - [Zod](https://zod.dev/) — schema validation
-- [Free Dictionary API](https://dictionaryapi.dev/) / [FreeDictionaryAPI](https://freedictionaryapi.com/) — word data
+- [FreeDictionaryAPI](https://freedictionaryapi.com/) — word data
 - [MyMemory Translation API](https://mymemory.translated.net/) — English → Bahasa translation
 - [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) — pronunciation audio
 
@@ -48,7 +49,7 @@ A fast, responsive dictionary web app built with **Next.js**. Search any English
 
 ### Prerequisites
 
-- **Node.js** 18+ and **npm** installed on your machine.
+- **Node.js** 20.9+ and **npm** installed on your machine.
 
 ### Installation
 
@@ -79,9 +80,17 @@ npm run start   # start the production server
 npm run lint    # run ESLint
 ```
 
+### Run the tests
+
+Playwright E2E suite (page load, search, XSS, console errors). Start the dev server on port 3000, then:
+
+```bash
+npx playwright test
+```
+
 ## API Note
 
-The app consumes the public **Free Dictionary API** — **no API key is required**. Responses are validated against a Zod schema before being rendered.
+The app consumes the public **FreeDictionaryAPI** — **no API key is required**. Responses are validated against a Zod schema before being rendered.
 
 The **Translate to Bahasa** feature uses the free [MyMemory Translation API](https://mymemory.translated.net/), which is key-less for low-volume use. Translations are fetched on-demand when you click the "Translate to Bahasa" button under a word.
 
@@ -92,6 +101,7 @@ src/
 ├── app/
 │   ├── fonts/            # Local fonts (Inter, Lora, Inconsolata)
 │   ├── globals.css
+│   ├── icon.png          # App icon
 │   ├── layout.tsx        # Root layout + font + theme provider
 │   └── page.tsx          # Main dictionary page (search, results, UI logic)
 └── components/
@@ -101,6 +111,9 @@ src/
     ├── moon.tsx          # Moon icon
     ├── notFound.tsx      # "No definitions found" state
     └── theme-provider.tsx
+tests/
+└── e2e-security.spec.ts  # E2E security tests
+playwright.config.js      # Test runner config
 ```
 
 ## Useful Resources
