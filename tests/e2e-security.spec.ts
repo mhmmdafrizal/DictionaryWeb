@@ -17,7 +17,7 @@ test.describe("Dictionary App E2E Security Suite", () => {
     expect(body).not.toContain("alert(1)");
   });
   test("no console errors", async ({ page }) => {
-    const errs = [];
+    const errs: string[] = [];
     page.on("console", (m) => { if (m.type() === "error") errs.push(m.text()); });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
